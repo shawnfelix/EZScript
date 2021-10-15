@@ -3,5 +3,7 @@ class Error():
 
 class SemanticError(Error):
     ROOT_MSG = "[Semantic Error]: "
-    def error(value,self):
-        return self.ROOT_MSG + value;
+
+    @staticmethod
+    def error(value):
+        return SemanticError.ROOT_MSG + value

@@ -63,4 +63,8 @@
     statements    : statement statements
     statement     : c_stmt | s_stmt | e_stmt
     c_stmt        : function_def | klass_def | main_def
+        function_def    : "FUNCTION NAME LPAREN RPAREN block"
+                            | "FUNCTION NAME LPAREN params RPAREN block" 
     s_stmt        : assignment | return
+    
+    params        : param params

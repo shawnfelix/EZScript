@@ -8,7 +8,7 @@ class EzLexer(Lexer):
     'COMMA', 
     'LPAREN', 'RPAREN', 'LBRACK', 'RBRACK', 'LCBRACK', 'RCBRACK',
     'AND', 'OR', 'NOT', 'EQ', 'NOTEQ', 'GTE', 'LTE', 'GT', 'LT', 
-    'ASSIGN', 'SEMICOLON', 'IF', 'ELSE', 'WHILE', 'PRINT', 'FUNCTION', 'RETURN'}
+    'ASSIGN', 'SEMICOLON', 'IF', 'ELSE', 'WHILE', 'PRINT', 'FUNCTION', 'RETURN', 'KLASS'}
 
     literals = {',', '<', '>', '+', '-', '*', '/'}
     
@@ -26,9 +26,9 @@ class EzLexer(Lexer):
     NAME['and'] = AND
     NAME['or'] = OR
     NAME['mod'] = MODULUS
-    NAME['def'] = FUNCTION
+    NAME['function'] = FUNCTION
     NAME['return'] = RETURN
-    #NAME['class'] = CLASS
+    NAME['class'] = KLASS
     
     @_(r'(\-{0,1}[0-9]*\.[0-9]+|\-{0,1}[0-9]+\.)([Ee][+-]?[0-9]+)?')
     def FLOAT(self, t):

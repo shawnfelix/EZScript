@@ -1,30 +1,7 @@
 from sly import Parser
 from EzLexer import EzLexer
 from helper import NumericHelper
-from errors import SemanticError
-
-
-class SumOp:
-    def __init__(self, l, r):
-        self.l = l
-        self.r = r
-    def run(self):
-        types = [int, float, str, list]
-        l = self.l.run()
-        r = self.r.run()
-        try:
-            if ((type(l) in types and type(r) in types) #are in types
-                and (NumericHelper.areBothNumeric(l, r) or type(l) == type(r))):
-                # int, float  - math addition
-                # arrays - array arithmetic or maybe concat
-                # string, list - concatenation 
-            
-                print(l + r)
-                return l + r
-            else:
-                raise Exception(SemanticError.error("Addition operation must be between two number types"))
-        except:
-            raise Exception('SEMANTIC ERROR')
+import astnodes 
 
 class Atomic:
     def __init__(self, value, type):
@@ -60,17 +37,42 @@ class EzParser(Parser):
     @_('statements')
     def file(self, p):
         return p.statements
-    
+    @_('')
+    def empty(self, p):
+        pass
+
     @_('statement statements')
     def statements(self, p):
         return [p.statement] + p.statements
-    @_('')
+    @_('empty')
     def statements(self, p):
         return []
 
+    @_('LCBRACK s_stmts RCBRACK')
+    def block(self, p):
+        return p.s_stmts
+    
+
+    @_('s_stmt SEMICOLON s_stmts')
+    def s_stmts(self, p):
+        return [p.s_stmt] + p.s_stmts
+    @_('empty')
+    def s_stmts(self, p):
+        return []
+    
     @_('s_stmt')
     def statement(self, p):
         return p.s_stmt
+    @_('c_stmt')
+    def statement(self, p):
+        return p.c_stmt
+    #TODO e_stmt def
+
+
+    @_('klass_def',
+       'function_def')
+    def c_stmt(self, p):
+        return p[0]
 
     # ATOMICS
     @_('INTEGER')
@@ -86,9 +88,45 @@ class EzParser(Parser):
     def atom(self, p):
         return Atomic(p.BOOLEAN, bool)
     
-    @_('')
+    
     # OPERATIONS
-    @_('atom PLUS atom SEMICOLON')
+    @_('atom PLUS atom')
     def s_stmt(self, p):
-        return SumOp(p.atom0, p.atom1)
+        return astnodes.SumOp(p.atom0, p.atom1)
+    @_('atom MINUS atom')
+    def s_stmt(self, p):
+        return astnodes.SubtractionOp(p.atom0, p.atom1)
+    @_('atom MULT atom')
+    def s_stmt(self, p):
+        return astnodes.MultiplicationOp(p.atom0, p.atom1)
+    @_('atom DIVIDE atom')
+    def s_stmt(self, p):
+        return astnodes.DivisionOp(p.atom0, p.atom1)
+
+    # PARAMETERS
+    @_('NAME')
+    def param(self, p):
+        return p.NAME #TODO define param variable in relevant scope?
+    @_('param COMMA params')
+    def params(self, p):
+        return [p.param] + p.params
+    @_('empty')
+    def params(self, p):
+        return []
+
+    # CLASS DEFINITIONS
+    @_('KLASS NAME LPAREN RPAREN block')
+    def klass_def(self, p):
+        return astnodes.KlassDef(p.NAME, p.block)
+    @_('KLASS NAME LPAREN params RPAREN block')
+    def klass_def(self, p):
+        return astnodes.KlassDef(p.NAME, p.params, p.block)
+    
+    # FUNCTION DEFINITIONS
+    @_('FUNCTION NAME LPAREN RPAREN block')
+    def function_def(self, p):
+        return astnodes.FunctionDef(p.NAME, p.block)
+    @_('FUNCTION NAME LPAREN params RPAREN block')
+    def function_def(self, p):
+        return astnodes.FunctionDef(p.NAME, p.block)
     
