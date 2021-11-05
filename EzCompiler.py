@@ -1,7 +1,8 @@
 import sys
 import os
 from EzLexer import EzLexer
-from EzParser import EzParser 
+from EzParser import * 
+from lang.Env import *
 
 def interpreter(name, lexer: EzLexer, parsr: EzParser, debug: bool):
     try:
@@ -52,8 +53,13 @@ def testCompiler(lexer: EzLexer, parsr: EzParser, debug: bool):
 
     tokenized = lexer.tokenize(program)
     ast = parsr.parse(tokenized)
-    for node in ast:
-        node.run()
+    gbl_scope = Scope()
+    for klass in ast.klass_defs:
+        klass.run()
+    for functiondef in ast.function_defs:
+        functiondef.run(gbl_scope)
+    for stmt in ast.main_def:
+        stmt.run()
 
 if __name__ == '__main__':
     debug = False

@@ -1,5 +1,5 @@
 # EASYSCRIPT 0.0.1
-
+A staticlly-typed and easy to learn programming language for beginners.
 ## DATA TYPES
     int - Integer
     float - Floating point numbers
@@ -68,3 +68,8 @@
     s_stmt        : assignment | return
     
     params        : param params
+
+# Symbol / Variable Definition
+    Symbol class - (name, type, value)
+        Name - String
+        Type - String
