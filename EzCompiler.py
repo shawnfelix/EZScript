@@ -54,12 +54,15 @@ def testCompiler(lexer: EzLexer, parsr: EzParser, debug: bool):
     tokenized = lexer.tokenize(program)
     ast = parsr.parse(tokenized)
     gbl_scope = Scope()
-    for klass in ast.klass_defs:
-        klass.run()
-    for functiondef in ast.function_defs:
-        functiondef.run(gbl_scope)
-    for stmt in ast.main_def:
-        stmt.run()
+    if ast.klass_defs != None:
+        for klassdef in ast.klass_defs:
+            klassdef.run(gbl_scope)
+    if ast.function_defs != None:
+        for functiondef in ast.function_defs:
+            functiondef.run(gbl_scope)
+    if ast.main_def != None:
+        for stmt in ast.main_def:
+            stmt.run()
 
 if __name__ == '__main__':
     debug = False

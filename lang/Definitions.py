@@ -17,7 +17,8 @@ class FunctionDef():
         self.ret = ret
     def run(self, scope: Scope):
         # register the fuction in parent scope
-        scope.function_defs.append(self)
+        scope.registerFunction(self.name, self)
+        return
 
 class VariableDef():
     def __init__(self, name, value, type):

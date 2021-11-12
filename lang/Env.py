@@ -38,10 +38,14 @@ class SymbolTable():
         return self.table.get(name)
 
 class Scope():
-    function_defs = []
-    klass_defs = []
+    function_defs = {}
+    klass_defs = {}
     symbol_table = SymbolTable()
     def __init__(self):
         pass
     def run(self):
         return [self.symbol_table, self.function_defs, self.klass_defs]
+    def registerKlass(self, name, klass):
+        self.klass_defs[name] = klass
+    def registerFunction(self, name, function):
+        self.function_defs[name] = function

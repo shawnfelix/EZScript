@@ -24,20 +24,20 @@ class EzParser(Parser):
     literals = EzLexer.literals
 
     parse_bucket = FileDefs()
-    #precedence = (
-    #    ('left', ORELSE),
-    #    ('left', ANDALSO),
-    #    ('left', NOT),
-    #    ('left', EQ, NOTEQ, GT, LT, GTE, LTE),
-    #    ('left', PLUS, MINUS),
-    #    ('left', MULT, DIVIDE, MODULUS),
-    #    ('left', LBRACK, RBRACK),
-    #    ('left', LPAREN, RPAREN),
-    #    ('right', NEGATION),
-    #    ('left', PARENEXPR),
-    #    ('left', FLOAT, INTEGER, BOOLEAN),
-    #    ('right', ASSIGN),
-    #)
+    precedence = (
+        ('left', ELSE),
+        ('left', AND),
+        ('left', NOT),
+        ('left', EQ, NOTEQ, GT, LT, GTE, LTE),
+        ('left', PLUS, MINUS),
+        ('left', MULT, DIVIDE, MODULUS),
+        ('left', LBRACK, RBRACK),
+        ('left', LPAREN, RPAREN),
+        #('right', NEGATION),
+        #('left', PARENEXPR),
+        ('left', FLOAT, INTEGER, BOOLEAN),
+        ('right', ASSIGN),
+    )
     #precedence = (
     #    ('left', PLUS, MINUS),
     #)
@@ -71,7 +71,14 @@ class EzParser(Parser):
     # CLASS BLOCK 
     @_('LCBRACK klass_stmts RCBRACK')
     def klassblock(self, p):
-        return 
+        # create class block and append all definitions to it
+        kblock = lang.KlassBlock()
+        for stmt in p.klass_stmts:
+            if isinstance(stmt, lang.FunctionDef):
+                kblock.functions = kblock.functions + [lang.KlassFunction(stmt.name, stmt.args, stmt.block, stmt.ret)]
+            elif isinstance(stmt, lang.KlassField):
+                kblock.functions = kblock.functions + [stmt]
+        return kblock
 
     @_('klass_field',
         'function_def',
@@ -89,7 +96,7 @@ class EzParser(Parser):
 
     @_('klass_stmt klass_stmts')
     def klass_stmts(self, p):
-        return p
+        return [p.klass_stmt] + p.klass_stmts
     @_('empty')
     def klass_stmts(self, p):
         return []
@@ -149,10 +156,10 @@ class EzParser(Parser):
     # CLASS DEFINITIONS
     @_('KLASS NAME LPAREN RPAREN klassblock')
     def klass_def(self, p):
-        return lang.KlassDef(p.NAME, p.block)
+        return lang.KlassDef(p.NAME, p.klassblock)
     @_('KLASS NAME LPAREN params RPAREN klassblock')
     def klass_def(self, p):
-        return lang.KlassDef(p.NAME, p.params, p.block)
+        return lang.KlassDef(p.NAME, p.params, p.klassblock)
     
     # FUNCTION DEFINITIONS
     @_('FUNCTION NAME LPAREN RPAREN block')
