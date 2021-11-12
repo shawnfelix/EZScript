@@ -2,9 +2,10 @@ from .Env import Scope
 from .Definitions import FunctionDef
 
 class KlassDef():
-    def __init__(self, name, block):
+    def __init__(self, name, params, block):
         self.name = name
         self.block = block
+        self.params = params
     def run(self, gbl_scope: Scope):
         # register class in global scope
         gbl_scope.registerKlass(self.name, self)

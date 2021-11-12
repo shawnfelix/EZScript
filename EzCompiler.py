@@ -61,8 +61,8 @@ def testCompiler(lexer: EzLexer, parsr: EzParser, debug: bool):
         for functiondef in ast.function_defs:
             functiondef.run(gbl_scope)
     if ast.main_def != None:
-        for stmt in ast.main_def:
-            stmt.run()
+        for stmt in ast.main_def.block:
+            stmt.run(gbl_scope)
 
 if __name__ == '__main__':
     debug = False

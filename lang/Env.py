@@ -19,20 +19,21 @@ class Symbol():
 class SymbolTable():
     def __init__(self):
         self.table = {}
-    def defineObject(self, name, type, value):
+    def defSymbol(self, name, type, value):
         if (self.table.get(name) != None):
             raise Exception('Symbol already defined for: ' + name)
         
-        symb = Symbol(name, type)
+        symb = Symbol(name, type, value)
+        self.table[name] = symb
         
-    def setObject(self, name, type, value):
+    def setSymbol(self, name, type, value):
         if (self.table.get(name) == None):
             raise Exception('No symbol defined for: ' + name)
 
         newObj = Symbol(name, value, type)
         self.table.insert(name, newObj)
 
-    def getObject(self, name):
+    def getSymbol(self, name):
         if (self.table.get(name) == None):
             raise Exception('No symbol defined for: ' + name)
         return self.table.get(name)
@@ -49,3 +50,9 @@ class Scope():
         self.klass_defs[name] = klass
     def registerFunction(self, name, function):
         self.function_defs[name] = function
+    def getSymbol(self, name):
+        return self.symbol_table.getSymbol(name)
+    def defSymbol(self, name, type, value):
+        self.symbol_table.defSymbol(name, type, value)
+    def setSymbol(self, name, type, value):
+        self.symbol_table.setSymbol(name, type, value)

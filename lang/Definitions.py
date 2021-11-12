@@ -25,5 +25,7 @@ class VariableDef():
         self.name = name
         self.value = value
         self.type = type
-    def run(self, global_env):
-        pass #TODO
+    def run(self, scope: Scope):
+        val = self.value.run(scope)
+        scope.defSymbol(self.name, self.type, val)
+        return
