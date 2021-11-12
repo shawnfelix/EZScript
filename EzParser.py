@@ -20,6 +20,7 @@ class FileDefs():
         self.main_def = None
 
 class EzParser(Parser):
+    debugfile = 'debug.out'
     tokens = EzLexer.tokens
     literals = EzLexer.literals
 
@@ -55,7 +56,7 @@ class EzParser(Parser):
             self.parse_bucket.function_defs.append(p.statement)
         elif isinstance(p.statement, lang.KlassDef):
             self.parse_bucket.klass_defs.append(p.statement)
-        elif isinstance(p.statment, lang.MainDef):
+        elif isinstance(p.statement, lang.MainDef):
             self.parse_bucket.main_def = p.statement
 
         return self.parse_bucket
@@ -154,24 +155,18 @@ class EzParser(Parser):
         return lang.MainDef(p.block)
 
     # CLASS DEFINITIONS
-    @_('KLASS NAME LPAREN RPAREN klassblock')
-    def klass_def(self, p):
-        return lang.KlassDef(p.NAME, p.klassblock)
     @_('KLASS NAME LPAREN params RPAREN klassblock')
     def klass_def(self, p):
         return lang.KlassDef(p.NAME, p.params, p.klassblock)
     
     # FUNCTION DEFINITIONS
-    @_('FUNCTION NAME LPAREN RPAREN block')
-    def function_def(self, p):
-        return lang.FunctionDef(p.NAME, None, p.block, None)
     @_('FUNCTION NAME LPAREN params RPAREN block')
     def function_def(self, p):
-        return lang.FunctionDef(p.NAME, p.block)
+        return lang.FunctionDef(p.NAME, p.params, p.block, None)
 
     # VARIABLE DEFINITIONS
     @_('VAR NAME')
-    def s_stmt(self, p):
+    def variabledef(self, p):
         return lang.VariableDef(p.NAME, None, None)
     
     # ASSIGNMENT
@@ -181,7 +176,7 @@ class EzParser(Parser):
         return p[0]
     @_('VAR NAME ASSIGN expr')
     def variabledef(self, p):
-        return lang.VariableDef(p.NAME, None, None)
+        return lang.VariableDef(p.NAME, p.expr, None)
     @_('NAME ASSIGN expr')
     def assignment(self, p):
         return lang.AssignmentOp(p.NAME, p.expr)
