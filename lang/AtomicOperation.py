@@ -1,14 +1,14 @@
 from helper import NumericHelper
 from errors import SemanticError
-
+from .Env import Scope
 class SumOp:
     def __init__(self, l, r):
         self.l = l
         self.r = r
-    def run(self, env):
+    def run(self, scope):
         types = [int, float, str, list]
-        l = self.l.run()
-        r = self.r.run()
+        l = self.l.run(scope)
+        r = self.r.run(scope)
         if ((type(l) in types and type(r) in types) #are in types
             and (NumericHelper.areBothNumeric(l, r) or type(l) == type(r))):
             # int, float  - math addition
@@ -21,9 +21,9 @@ class SubtractionOp: #done
     def __init__(self, l, r):
         self.l = l
         self.r = r
-    def run(self, env):
-        l = self.l.run(env)
-        r = self.r.run(env)
+    def run(self, scope):
+        l = self.l.run(scope)
+        r = self.r.run(scope)
         #ints or reals only
         types = [int, float]
         if type(l) not in types or type(r) not in types:
@@ -34,9 +34,9 @@ class MultiplicationOp:
     def __init__(self, l, r):
         self.l = l
         self.r = r
-    def run(self, env):
-        l = self.l.run(env)
-        r = self.r.run(env)
+    def run(self, scope):
+        l = self.l.run(scope)
+        r = self.r.run(scope)
         # ints or reals only
         types = [int, float]
         if type(l) not in types or type(r) not in types:
@@ -48,9 +48,9 @@ class DivisionOp():
     def __init__(self, l, r):
         self.l = l
         self.r = r
-    def run(self, env):
-        l = self.l.run(env)
-        r = self.r.run(env)
+    def run(self, scope):
+        l = self.l.run(scope)
+        r = self.r.run(scope)
         try:
             # cant divide by zero
             if r == 0:
@@ -60,9 +60,10 @@ class DivisionOp():
             raise Exception('SEMANTIC ERROR') #TODO error messages
 
 class AssignmentOp():
-    def __init__(self, name, val):
+    def __init__(self, name, expr):
         self.name = name
-        self.val = val
-    def run(self, env):
-        #is name in symbol table
-        pass #TODO
+        self.expr = expr
+    def run(self, scope:Scope):
+        val = self.expr.run(scope)
+        scope.setSymbol(self.name, None, val)
+        return

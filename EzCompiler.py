@@ -63,6 +63,7 @@ def testCompiler(lexer: EzLexer, parsr: EzParser, debug: bool):
     if ast.main_def != None:
         for stmt in ast.main_def.block:
             stmt.run(gbl_scope)
+    print("[End of Program]")
 
 if __name__ == '__main__':
     debug = False

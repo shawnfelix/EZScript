@@ -8,9 +8,9 @@ class Atomic:
     def __init__(self, value, type):
         self.value = value
         self.type = type
-    def __neg__(self):
+    def __neg__(self, scope):
         return Atomic (-self.value, self.type) # negation
-    def run(self):
+    def run(self, scope):
         return self.value
 
 class FileDefs():
@@ -137,6 +137,9 @@ class EzParser(Parser):
     @_('BOOLEAN')
     def atom(self, p):
         return Atomic(p.BOOLEAN, bool)
+    @_('NAME')
+    def atom(self, p):
+        return lang.DerefVarOp(p.NAME)
 
     # PARAMETERS
     @_('NAME')
@@ -196,7 +199,11 @@ class EzParser(Parser):
     def expr(self, p):
         return lang.DivisionOp(p.atom0, p.atom1)
 
+    @_('atom')
+    def expr(self, p):
+        return p.atom
+
     # BUILT IN FUNCTIONS
     @_('PRINT LPAREN expr RPAREN')
     def s_stmt(self, p):
-        return lang.Print_Function(p.expr)
+        return lang.PrintFunction(p.expr)

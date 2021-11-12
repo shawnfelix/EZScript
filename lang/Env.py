@@ -30,13 +30,14 @@ class SymbolTable():
         if (self.table.get(name) == None):
             raise Exception('No symbol defined for: ' + name)
 
-        newObj = Symbol(name, value, type)
-        self.table.insert(name, newObj)
+        newObj = Symbol(name, type, value)
+        self.table[name] = newObj
 
     def getSymbol(self, name):
         if (self.table.get(name) == None):
             raise Exception('No symbol defined for: ' + name)
-        return self.table.get(name)
+        val = self.table.get(name)
+        return val.value
 
 class Scope():
     function_defs = {}
@@ -56,3 +57,10 @@ class Scope():
         self.symbol_table.defSymbol(name, type, value)
     def setSymbol(self, name, type, value):
         self.symbol_table.setSymbol(name, type, value)
+
+class DerefVarOp():
+    def __init__(self, name):
+        self.name = name
+        return
+    def run(self, scope:Scope):
+        return scope.getSymbol(self.name)
